@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="GBK"?>
+<Configuration >
+
+    <Properties>
+        <property name="LOG_HOME">/logs</property>
+        <!-- 控制台的日志输出样式 -->
+        <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+    </Properties>
+
+    <Appenders>
+        <Console name="CONSOLE" immediateFlush="true" target="SYSTEM_OUT">
+            <!--正则：%-5p五位的日志级别 %X输出MDC中对应key的值 %d表示日期 %thread表示线程名 %m日志信息 %n换行符 -->
+            <PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
+        </Console>
+
+        <File name="FILE" fileName="${LOG_HOME}/${env:HOSTNAME}.log.crn" immediateFlush="false">
+            <!--正则：%-5p五位的日志级别 %X输出MDC中对应key的值 %d表示日期 %thread表示线程名 %m日志信息 %n换行符 -->
+            <PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
+        </File>
+
+        <File name="FILEMONITOR" fileName="${LOG_HOME}/${env:HOSTNAME}-monitor.log.crn" immediateFlush="false">
+            <!--正则：%-5p五位的日志级别 %X输出MDC中对应key的值 %d表示日期 %thread表示线程名 %m日志信息 %n换行符 -->
+            <PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
+        </File>
+
+        <File name="ACCESS-FILE" fileName="${LOG_HOME}/${env:HOSTNAME}-access.log.crn">
+            <!--只支持 CLF 模式 -->
+            <PatternLayout pattern="%msg%n"/>
+        </File>
+
+    </Appenders>
+
+    <Loggers>
+        <!-- nettly access log 日志, additivity='false' 代表 子logger 日志不往 root 里面打-->
+        <AsyncLogger name="reactor.netty.http.server.AccessLog" level="DEBUG    " additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </AsyncLogger>
+        <!-- 限流组件相关日志信息-->
+        <AsyncLogger name="rate.logger" level="INFO" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </AsyncLogger>
+
+        <!-- 限流组件 自动限流监控日志 -->
+        <AsyncLogger name="rate.monitor.logger" level="INFO" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </AsyncLogger>
+
+        <!--主应用日志-->
+        <AsyncRoot level="DEBUG" includeLocation="true">
+            <AppenderRef ref="CONSOLE"/>
+        </AsyncRoot>
+    </Loggers>
+</Configuration>
